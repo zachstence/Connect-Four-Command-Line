@@ -34,6 +34,8 @@ struct Slot {
   };
 };
 
+
+
 void displayBoard(vector<vector<Slot>> b) {
   cout << "| 1 2 3 4 5 6 7 |" << endl;
   for (int r = 0; r < b[0].size(); r++) {
@@ -66,15 +68,35 @@ void displayDebug(vector<vector<Slot>> b) {
   cout << "   |-----------------------------------------|" << endl;
 }
 
-bool won(vector<vector<Slot>> b, char piece) {
-  // for (int r = 0; r < b[0].size(); r++) {
-  //   for (int c = 0; c < b.size(); c++) {
-  //     if (b[c][r] == piece) {
 
-  //     }
-  //   }
-  // }
+
+bool won(vector<vector<Slot>> b, char piece) {
   return false;
+}
+
+void updateCurrent(vector<vector<Slot>> &b, int c, int r) {
+  // first initialize near counts of piece just placed
+  // loop through near counts
+  Slot *curr = &b[c][r];
+  for (auto it = curr->near.begin(); it != curr->near.end(); ++it) {
+    // get direction and x, y offsets
+    auto direction = it->first;
+    int x = direction.first;
+    int y = direction.second;
+
+    try {
+      // if same piece in a direction, increment appropriate count
+      // use .at() to get exception instead of segfault
+      Slot *adj = &b.at(c + x).at(r + y);
+      if (adj->disp == curr->disp) {
+        curr->near[direction] = adj->near[direction] + 1;
+      }
+      // if out of bounds, just skip
+    } catch (const std::out_of_range& oor) {
+      continue;
+    }
+
+  }
 }
 
 void placePiece(vector<vector<Slot>> &b, Player &p) {
@@ -88,38 +110,7 @@ void placePiece(vector<vector<Slot>> &b, Player &p) {
       if (curr->disp == ' ') {
         curr->disp = p.piece;
 
-        // first initialize near counts of piece just placed
-        // loop through near counts
-        for (auto it = curr->near.begin(); it != curr->near.end(); ++it) {
-          // get direction and x, y offsets
-          auto direction = it->first;
-          int x = direction.first;
-          int y = direction.second;
-
-          try {
-            // if same piece in a direction, increment appropriate count
-            // use .at() to get exception instead of segfault
-            Slot *adj = &b.at(c + x).at(r + y);
-            if (adj->disp == curr->disp) {
-              curr->near[direction] = adj->near[direction] + 1;
-            }
-            // if out of bounds, just skip
-          } catch (const std::out_of_range& oor) {
-            continue;
-          }
-
-
-
-          // then initialize near counts of pieces in the opposite directions of what is in Slot.adj
-
-
-
-        }
-
-
-
-
-
+        updateCurrent(b, c, r);
 
         return;
       }
@@ -128,11 +119,9 @@ void placePiece(vector<vector<Slot>> &b, Player &p) {
   }
 }
 
-void displayColumn(vector<char> c) {
-  for (auto it = c.begin(); it != c.end(); ++it) {
-    cout << *it << endl;
-  }
-}
+
+
+
 
 int main() {
   vector<vector<Slot>> board (COLS, vector<Slot> (ROWS) );
