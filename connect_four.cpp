@@ -1,11 +1,15 @@
 #include <iostream>
 #include <vector>
+#include <map>
+#include <utility>
 
 using std::cin;
 using std::cout;
 using std::endl;
 using std::string;
 using std::vector;
+using std::map;
+using std::pair;
 
 const int ROWS = 6;
 const int COLS = 7;
@@ -31,26 +35,32 @@ void displayBoard(vector<vector<char>> b) {
   cout << "|---------------|" << endl;
 }
 
-bool won(vector<vector<char>> board, char piece) {
-  for (int r = 0; r < b[0].size(); r++) {
-    for (int c = 0; c < b.size(); c++) {
-      if (board[c][r] == piece) {
+bool won(vector<vector<char>> b, char piece) {
+  // for (int r = 0; r < b[0].size(); r++) {
+  //   for (int c = 0; c < b.size(); c++) {
+  //     if (b[c][r] == piece) {
 
-      }
-    }
-  }
+  //     }
+  //   }
+  // }
+  return true;
 }
 
 void placePiece(vector<vector<char>> &board, Player &p) {
   int c;
   cout << "Player " << p.id << ", enter a column to place a piece: ";
-  cin >> c;
-  for (auto it = board[c - 1].rbegin(); it != board[c - 1].rend(); ++it) {
-    if (*it == ' ') {
-      *it = p.piece;
-      cout << *it << endl;
-      break;
+  while (true) {
+    cin >> c;
+    for (auto it = board[c - 1].rbegin(); it != board[c - 1].rend(); ++it) {
+      if (*it == ' ') {
+        *it = p.piece;
+
+        p.won = won(board, p.piece);
+
+        return;
+      }
     }
+    cout << "That column is already full, please pick another: ";
   }
 }
 
@@ -67,7 +77,7 @@ int main() {
   Player p1 = {1, p1Piece, false};
   Player p2 = {2, p2Piece, false};
 
-  for (int count = 0; count < (ROWS * COLS); count++) {
+  for (int count = 0; count < (ROWS * COLS); count += 2) {
     placePiece(board, p1);
     if (p1.won) break;
     displayBoard(board);
@@ -77,8 +87,9 @@ int main() {
     displayBoard(board);
   }
 
-  if (p1.won) cout << "Player 1 won!" << endl;
-  else if (p2.won) cout << "Player 2 won!" << endl;
-  else cout << "Draw!" << endl;
+  int winner = p1.won ? 1 : p2.won ? 2 : 0;
+
+  if (winner == 0) cout << "Draw!" << endl;
+  else cout << "Player " << winner << " won!" << endl;
 
 }
