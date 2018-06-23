@@ -119,10 +119,14 @@ void placePiece(vector<vector<Slot>> &b, Player &p) {
   int choice;
   cout << "Player " << p.id << ", enter a column to place a piece: ";
   while (true) {
-    cin >> choice; // need to validate choice
+    cin >> choice;
+    while (choice < 1 || choice > 7) {
+      cout << "Please enter a valid column choice between 1 and 7: ";
+      cin >> choice;
+    }
     int c = choice - 1;
     for (int r = ROWS - 1; r >= 0; r--) {
-      Slot *curr = &b[c][r];
+      Slot *curr = &b.at(c).at(r);
       if (curr->disp == ' ') {
         curr->disp = p.piece;
 
