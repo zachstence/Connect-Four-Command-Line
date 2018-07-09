@@ -3,6 +3,8 @@
 #include <map>
 #include <utility>
 #include <stdexcept>
+#include <limits>
+#include <ios>
 
 using std::cin;
 using std::cout;
@@ -118,10 +120,12 @@ void placePiece(vector<vector<Slot>> &b, Player &p) {
   bool win = false;
   int choice;
   cout << "Player " << p.id << ", enter a column to place a piece: ";
+  cin >> choice;
   while (true) {
-    cin >> choice;
-    while (choice < 1 || choice > 7) {
-      cout << "Please enter a valid column choice between 1 and 7: ";
+    while (cin.fail() || choice - 1 < 0 || choice - 1 > b.size()) {
+      cout << "Enter a valid column (1-" << b.size() << "): ";
+      cin.clear();
+      cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
       cin >> choice;
     }
     int c = choice - 1;
@@ -137,11 +141,10 @@ void placePiece(vector<vector<Slot>> &b, Player &p) {
         return;
       }
     }
-    cout << "That column is already full, please pick another: ";
+    cout << "That column is already full, please pick another." << endl;
+    std::cin.setstate(std::ios::failbit);
   }
 }
-
-
 
 
 
